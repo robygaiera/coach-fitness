@@ -565,7 +565,7 @@ function renderCibo(){
 }
 window.wat=d=>{const t=today(),o=DB.get("coachWater",{});o[t]=Math.max(0,(o[t]||0)+d);DB.set("coachWater",o);renderCibo();};
 window.pro=d=>{const t=today(),o=DB.get("coachProtein",{});o[t]=Math.max(0,(o[t]||0)+d);DB.set("coachProtein",o);renderCibo();};
-window.saveProfile=()=>{const p={sex:document.getElementById("pSex").value,age:num(document.getElementById("pAge").value)||37,h:num(document.getElementById("pH").value)||178,act:parseFloat(document.getElementById("pAct").value)||1.55};DB.set("coachProfile",p);toast("Dati salvati");renderCibo();};
+window.saveProfile=()=>{const p={sex:document.getElementById("pSex").value,age:num(document.getElementById("pAge").value)||30,h:num(document.getElementById("pH").value)||175,act:parseFloat(document.getElementById("pAct").value)||1.55};DB.set("coachProfile",p);toast("Dati salvati");renderCibo();};
 
 /* ============ PIANO ============ */
 function renderPiano(){
