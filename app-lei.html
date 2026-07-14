@@ -601,7 +601,7 @@ let toastT;function toast(m){const el=document.getElementById("toast");el.textCo
 /* ============ TIMER ============ */
 const T={dur:90,left:90,running:false,endAt:0,tick:null,wake:null,ac:null};
 const clock=document.getElementById("clock"),toggleBtn=document.getElementById("toggle"),dock=document.getElementById("dock"),tlabel=document.getElementById("tlabel");
-function unlockAudio(){try{if(navigator.audioSession)navigator.audioSession.type="ambient";}catch(e){}if(!T.ac){try{T.ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(T.ac&&T.ac.state==="suspended")T.ac.resume();primeAudio();}
+function unlockAudio(){try{if(navigator.audioSession)navigator.audioSession.type=DB.get("audioMode","ambient");}catch(e){}if(!T.ac){try{T.ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(T.ac&&T.ac.state==="suspended")T.ac.resume();primeAudio();}
 document.body.addEventListener("pointerdown",unlockAudio);
 function beep(){if(!T.ac)return;const n=T.ac.currentTime;[0,0.28,0.56].forEach((o,i)=>{const os=T.ac.createOscillator(),g=T.ac.createGain();os.type="sine";os.frequency.value=i===2?1180:880;g.gain.setValueAtTime(1e-4,n+o);g.gain.exponentialRampToValueAtTime(0.5,n+o+0.02);g.gain.exponentialRampToValueAtTime(1e-4,n+o+0.22);os.connect(g);g.connect(T.ac.destination);os.start(n+o);os.stop(n+o+0.24);});}
 function tickSound(){if(!T.ac)return;const n=T.ac.currentTime,os=T.ac.createOscillator(),g=T.ac.createGain();os.type="sine";os.frequency.value=1000;g.gain.setValueAtTime(1e-4,n);g.gain.exponentialRampToValueAtTime(0.4,n+0.01);g.gain.exponentialRampToValueAtTime(1e-4,n+0.09);os.connect(g);g.connect(T.ac.destination);os.start(n);os.stop(n+0.1);}
@@ -624,7 +624,14 @@ document.getElementById("minus").onclick=()=>{T.left=Math.max(5,T.left-15);if(T.
 document.getElementById("plus").onclick=()=>{T.left+=15;if(T.running)T.endAt=Date.now()+T.left*1e3;paint();};
 document.getElementById("reset").onclick=()=>{pauseTimer();T.left=T.dur;clock.classList.remove("done");dock.classList.remove("ring");tlabel.textContent="Recupero";paint();};
 const PRE=[45,60,75,90,120,150,180];
-(function(){const el=document.getElementById("presetsT");const tb=document.createElement("div");tb.className="pchip";tb.style.color="var(--teal)";tb.style.borderColor="var(--teal)";tb.textContent="🔊 Prova";tb.onclick=()=>{unlockAudio();playAlarm();};el.appendChild(tb);PRE.forEach(s=>{const c=document.createElement("div");c.className="pchip";c.dataset.s=s;c.textContent=s>=60?fmt(s):s+"s";c.onclick=()=>{unlockAudio();setDur(s);T.left=s;paint();};el.appendChild(c);});})();
+(function(){const el=document.getElementById("presetsT");
+var am=document.createElement("div");am.className="pchip";am.style.color="var(--amber)";am.style.borderColor="var(--amber)";
+function amLabel(){return DB.get("audioMode","ambient")==="playback"?"🔔 Sempre":"🎵 Con musica";}
+am.textContent=amLabel();
+am.onclick=function(){var nm=DB.get("audioMode","ambient")==="ambient"?"playback":"ambient";DB.set("audioMode",nm);try{if(navigator.audioSession)navigator.audioSession.type=nm;}catch(e){}am.textContent=amLabel();toast(nm==="playback"?"Suona anche in silenzioso (ferma la musica)":"Convive con la musica (muto se in silenzioso)");};
+el.appendChild(am);
+const tb=document.createElement("div");tb.className="pchip";tb.style.color="var(--teal)";tb.style.borderColor="var(--teal)";tb.textContent="🔊 Prova";tb.onclick=()=>{unlockAudio();playAlarm();};el.appendChild(tb);
+PRE.forEach(s=>{const c=document.createElement("div");c.className="pchip";c.dataset.s=s;c.textContent=s>=60?fmt(s):s+"s";c.onclick=()=>{unlockAudio();setDur(s);T.left=s;paint();};el.appendChild(c);});})();
 function hl(s){document.querySelectorAll(".pchip").forEach(c=>c.classList.toggle("on",+c.dataset.s===s));}
 setDur(90);
 
