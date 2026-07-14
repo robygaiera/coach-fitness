@@ -1,0 +1,7 @@
+.claude/
+*.pdf
+*.png
+build_pdf.py
+scratchpad/
+.DS_Store
+tasks/
